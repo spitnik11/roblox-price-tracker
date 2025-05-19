@@ -1,0 +1,19 @@
+﻿body {
+    font-family: 'Press Start 2P', monospace;
+    background-color: #111;
+    color: #f4f4f4;
+    image-rendering: pixelated;
+}
+
+.item {
+    background: #222;
+    border: 2px solid #444;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 8px;
+}
+
+.alert {
+    color: red;
+    font-weight: bold;
+}
