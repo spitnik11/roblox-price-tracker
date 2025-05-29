@@ -1,11 +1,7 @@
 // Access the ipcRenderer API exposed by the preload script
 const { ipcRenderer } = window.electronAPI;
-
-// Import the helper function to format prices nicely
 import { formatPrice } from '../../shared/utils.js';
 
-// Get references to the refresh button and the container where item cards will go
-const refreshBtn = document.getElementById('refresh-btn');
 const itemsContainer = document.getElementById('items-container');
 
 // Keep track of the last time data was refreshed (in ms)
@@ -37,7 +33,6 @@ function updateUI(items) {
         const el = document.createElement('div'); // Create a container for each item
         el.className = 'item'; // Apply styling class
 
-        // Fill the container with item name, formatted price, and optional alert message
         el.innerHTML = `
             <p>${item.name}</p>
             <p>Price: ${formatPrice(item.price)}</p>
