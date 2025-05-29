@@ -1,50 +1,72 @@
-// Access the ipcRenderer API exposed by the preload script
-const { ipcRenderer } = window.electronAPI;
+// dashboard.js
+
+// Access the ipcRenderer API and logger exposed by preload.js
+const { ipcRenderer, logError } = window.electronAPI;
 import { formatPrice } from '../../shared/utils.js';
 
 const itemsContainer = document.getElementById('items-container');
 
-// Keep track of the last time data was refreshed (in ms)
-let lastRefreshTime = 0;
+/**
+ * Render item card and include per-item refresh
+ */
+function renderItem(item) {
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.id = `item-${item.id}`;
 
-// When the refresh button is clicked...
-refreshBtn.addEventListener('click', async () => {
-    const now = Date.now();
+    el.innerHTML = `
+        <p>${item.name}</p>
+        <p id="price-${item.id}">Price: ${formatPrice(item.price)}</p>
+        ${item.alert ? '<span class="alert">Price Drop!</span>' : ''}
+        <button class="refresh-one" data-id="${item.id}">Refresh</button>
+    `;
 
-    // Prevent refreshing if it's been less than 30 seconds (cooldown)
-    if (now - lastRefreshTime < 30000) {
-        return alert('Cooldown: wait 30 seconds'); // Notify the user
-    }
+    return el;
+}
 
-    lastRefreshTime = now; // Update the last refresh timestamp
-
-    // Request fresh price data from the backend
-    const priceData = await ipcRenderer.invoke('refresh-data');
-
-    // Update the UI with the new data
-    updateUI(priceData);
-});
-
-// Update the dashboard with a list of items and their price info
+/**
+ * Render all items
+ */
 function updateUI(items) {
-    itemsContainer.innerHTML = ''; // Clear the container
+    itemsContainer.innerHTML = '';
 
     items.forEach(item => {
-        const el = document.createElement('div'); // Create a container for each item
-        el.className = 'item'; // Apply styling class
+        const el = renderItem(item);
+        itemsContainer.appendChild(el);
+    });
 
-        el.innerHTML = `
-            <p>${item.name}</p>
-            <p>Price: ${formatPrice(item.price)}</p>
-            ${item.alert ? '<span class="alert">Price Drop!</span>' : ''}
-        `;
+    // Add event listeners for individual refresh buttons
+    document.querySelectorAll('.refresh-one').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            try {
+                const itemId = e.target.dataset.id;
 
-        itemsContainer.appendChild(el); // Add the item to the dashboard
+                const result = await ipcRenderer.invoke('refresh-data', itemId);
+
+                if (result.error) {
+                    alert(result.error);
+                    return;
+                }
+
+                // Update only the price for that item
+                document.getElementById(`price-${itemId}`).innerText = `Price: ${formatPrice(result.price)}`;
+            } catch (err) {
+                logError(`Refresh button error for item ${e.target.dataset.id}: ${err.message}`);
+                alert('An error occurred while refreshing this item.');
+            }
+        });
     });
 }
 
-// When the page loads, automatically fetch and display item prices
+/**
+ * Initial load
+ */
 window.onload = async () => {
-    const priceData = await ipcRenderer.invoke('refresh-data'); // Get latest data
-    updateUI(priceData); // Populate the UI
+    try {
+        const items = await ipcRenderer.invoke('get-watchlist'); // Use 'get-watchlist' to load all items
+        updateUI(items);
+    } catch (err) {
+        logError(`Dashboard initial load error: ${err.message}`);
+        alert('An error occurred while loading your watchlist.');
+    }
 };

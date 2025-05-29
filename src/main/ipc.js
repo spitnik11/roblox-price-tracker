@@ -1,19 +1,46 @@
-// Import Electron's IPC module for main process communication
+// src/main/ipc.js
+
+// Electron IPC module
 const { ipcMain } = require('electron');
 
-// Import the function to fetch price data from the Roblox API
+// Feature-specific IPC modules
+require('./ipc/watchlist-ipc')(ipcMain);
+require('./ipc/alerts-ipc')(ipcMain);
+
+// Roblox price refresh handler with per-item cooldown
+
 const { fetchLimitedPrice } = require('./api');
 
-// Handle 'refresh-data' event from the renderer process
-// This is used when the dashboard asks for an updated price
-ipcMain.handle('refresh-data', async (event, itemId) => {
-    // Fetch and return the latest price data for the given itemId
-    return await fetchLimitedPrice(itemId);
-});
+// Cooldown tracking per item
+const itemCooldownMap = {};
 
-// Handle 'add-item' event from the renderer process
-// This is used when the user adds a new item to their watchlist
-ipcMain.handle('add-item', async (event, itemId) => {
-    // For now, just fetch the item data — later this will also update persistent storage
-    return await fetchLimitedPrice(itemId);
+/**
+ * Check if the specified item can be refreshed based on 30s cooldown
+ */
+function canRefreshItem(itemId) {
+    const now = Date.now();
+    const lastTime = itemCooldownMap[itemId] || 0;
+
+    if (now - lastTime >= 30000) {
+        itemCooldownMap[itemId] = now;
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Handles refresh-data request from renderer with item-specific cooldown
+ */
+ipcMain.handle('refresh-data', async (event, itemId) => {
+    if (!canRefreshItem(itemId)) {
+        return { error: 'Cooldown in effect' };
+    }
+
+    try {
+        const data = await fetchLimitedPrice(itemId);
+        return data;
+    } catch (error) {
+        return { error: 'Failed to fetch data' };
+    }
 });

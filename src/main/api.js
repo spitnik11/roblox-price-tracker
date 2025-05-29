@@ -9,7 +9,10 @@ require('dotenv').config();
 // Read the .ROBLOSECURITY token from the environment
 const ROBLOX_TOKEN = process.env.ROBLOX_TOKEN;
 
-// Fetch the lowest reseller price for a given Roblox limited item
+/**
+ * Fetch the lowest reseller price for a given Roblox limited item.
+ * Throws an error if the request fails or returns invalid data.
+ */
 async function fetchLimitedPrice(itemId) {
     const url = `https://economy.roblox.com/v1/assets/${itemId}/resellers`;
 
@@ -22,22 +25,24 @@ async function fetchLimitedPrice(itemId) {
         });
 
         // If the response isn't OK (e.g., 403, 500), throw an error
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-        // Parse the JSON response
+        // Attempt to parse the JSON
         const data = await response.json();
 
-        // Grab the lowest price from the first reseller listing (if available)
+        // Extract the lowest price from the first reseller listing (if available)
         const lowest = data.data?.[0]?.price || null;
 
-        // Return the itemId and its lowest price
+        // Return price data
         return { itemId, price: lowest };
     } catch (error) {
-        // Log and return any errors that occurred
+        // Log the error and re-throw it for tests to catch
         console.error(`Error fetching price for item ${itemId}:`, error);
-        return { itemId, error: error.message };
+        throw error;
     }
 }
 
-// Export the function for use in other backend modules
+// Export the function
 module.exports = { fetchLimitedPrice };
