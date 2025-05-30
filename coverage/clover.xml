@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1748562550541" clover="3.2.0">
-  <project timestamp="1748562550541" name="All files">
-    <metrics statements="34" coveredstatements="28" conditionals="15" coveredconditionals="8" methods="9" coveredmethods="7" elements="58" coveredelements="43" complexity="0" loc="34" ncloc="34" packages="2" files="3" classes="3"/>
+<coverage generated="1748563326265" clover="3.2.0">
+  <project timestamp="1748563326265" name="All files">
+    <metrics statements="34" coveredstatements="34" conditionals="15" coveredconditionals="12" methods="9" coveredmethods="9" elements="58" coveredelements="55" complexity="0" loc="34" ncloc="34" packages="2" files="3" classes="3"/>
     <package name="main">
       <metrics statements="17" coveredstatements="17" conditionals="8" coveredconditionals="6" methods="2" coveredmethods="2"/>
       <file name="alerts.js" path="C:\Users\losth\Documents\roblox-price-tracker\src\main\alerts.js">
@@ -29,13 +29,13 @@
       </file>
     </package>
     <package name="shared">
-      <metrics statements="17" coveredstatements="11" conditionals="7" coveredconditionals="2" methods="7" coveredmethods="5"/>
+      <metrics statements="17" coveredstatements="17" conditionals="7" coveredconditionals="6" methods="7" coveredmethods="7"/>
       <file name="utils.js" path="C:\Users\losth\Documents\roblox-price-tracker\src\shared\utils.js">
-        <metrics statements="17" coveredstatements="11" conditionals="7" coveredconditionals="2" methods="7" coveredmethods="5"/>
+        <metrics statements="17" coveredstatements="17" conditionals="7" coveredconditionals="6" methods="7" coveredmethods="7"/>
         <line num="9" count="1" type="stmt"/>
         <line num="10" count="2" type="stmt"/>
         <line num="11" count="2" type="stmt"/>
-        <line num="19" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="19" count="5" type="cond" truecount="2" falsecount="0"/>
         <line num="27" count="1" type="stmt"/>
         <line num="28" count="1" type="stmt"/>
         <line num="29" count="4" type="stmt"/>
@@ -43,11 +43,11 @@
         <line num="31" count="2" type="stmt"/>
         <line num="32" count="2" type="stmt"/>
         <line num="41" count="1" type="stmt"/>
-        <line num="44" count="0" type="stmt"/>
-        <line num="45" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="46" count="0" type="stmt"/>
-        <line num="47" count="0" type="stmt"/>
-        <line num="49" count="0" type="stmt"/>
+        <line num="44" count="4" type="stmt"/>
+        <line num="45" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="46" count="2" type="stmt"/>
+        <line num="47" count="2" type="stmt"/>
+        <line num="49" count="2" type="stmt"/>
         <line num="53" count="1" type="stmt"/>
       </file>
     </package>

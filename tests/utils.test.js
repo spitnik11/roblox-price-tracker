@@ -1,4 +1,5 @@
-const { debounce, cooldown } = require('../src/shared/utils.js');
+// Import all utility functions from shared utils
+const { debounce, cooldown, formatPrice, canRefresh } = require('../src/shared/utils.js');
 
 jest.useFakeTimers();
 
@@ -30,4 +31,26 @@ test('cooldown function prevents repeated calls too fast', () => {
     wrapped(); // now OK
 
     expect(mockFn).toBeCalledTimes(2);
+});
+
+test('formatPrice returns N/A for falsy values', () => {
+    expect(formatPrice(null)).toBe('N/A');
+    expect(formatPrice(0)).toBe('N/A');
+    expect(formatPrice(undefined)).toBe('N/A');
+});
+
+test('formatPrice formats valid number correctly', () => {
+    expect(formatPrice(1234)).toBe('R$1,234');
+    expect(formatPrice(5000000)).toBe('R$5,000,000');
+});
+
+test('canRefresh enforces 30s cooldown between calls', () => {
+    expect(canRefresh()).toBe(true);   // First call should be allowed
+    expect(canRefresh()).toBe(false);  // Immediate second call should fail
+
+    jest.advanceTimersByTime(29000);
+    expect(canRefresh()).toBe(false);  // Still too early
+
+    jest.advanceTimersByTime(1000);    // Total 30s passed
+    expect(canRefresh()).toBe(true);   // Now allowed again
 });
