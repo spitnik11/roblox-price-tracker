@@ -6,10 +6,19 @@
     <link rel="stylesheet" href="../styles/watchlist.css" />
 </head>
 <body>
-    <h1>📋 Watchlist</h1>
-    <input id="itemIdInput" placeholder="Enter Item ID" />
-    <button id="addItemBtn">Add to Watchlist</button>
-    <ul id="watchlistItems"></ul>
+    <h1>Watchlist</h1>
+
+    <!-- Input + Add button -->
+    <input id="item-id-input" placeholder="Enter Item ID" />
+    <button id="add-btn">Add to Watchlist</button>
+
+    <!-- Watchlist container -->
+    <ul id="watchlist"></ul>
+
+    <!-- Empty state message -->
+    <p id="empty-state" class="empty-state">Your watchlist is currently empty.</p>
+
+    <!-- Script -->
     <script src="../js/watchlist.js"></script>
 </body>
 </html>

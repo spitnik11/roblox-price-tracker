@@ -22,10 +22,19 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "jest-fetch-mock": "^3.0.3"
+    "jest-fetch-mock": "^3.0.3",
+    "mock-fs": "^5.5.0"
   },
   "jest": {
     "testEnvironment": "node",
-    "setupFiles": [ "./jest.setup.js" ]
+    "setupFiles": [ "./jest.setup.js" ],
+    "moduleDirectories": [ "node_modules", "src" ],
+    "moduleFileExtensions": [ "js", "json", "node" ],
+    "moduleNameMapper": {
+      "^@shared/(.*)$": "<rootDir>/src/shared/$1"
+    },
+    "restoreMocks": true,
+    "clearMocks": true,
+    "resetMocks": true
   }
 }

@@ -3,61 +3,127 @@
 // Access the ipcRenderer API exposed through the preload script
 const { ipcRenderer, logError } = window.electronAPI;
 
+// Import formatting function
+import { formatItemHTML } from './watchlistManager.js';
+
 // Get references to the input, button, and list elements from the HTML
 const input = document.getElementById('item-id-input');
 const addBtn = document.getElementById('add-btn');
 const list = document.getElementById('watchlist');
+const emptyStateMsg = document.getElementById('empty-state'); // Empty state element
+
+// Create undo snackbar element
+const snackbar = document.createElement('div');
+snackbar.id = 'undo-snackbar';
+snackbar.style.display = 'none';
+snackbar.style.position = 'fixed';
+snackbar.style.bottom = '10px';
+snackbar.style.left = '10px';
+snackbar.style.padding = '10px 20px';
+snackbar.style.background = '#222';
+snackbar.style.color = '#fff';
+snackbar.style.border = '1px solid #888';
+snackbar.style.borderRadius = '6px';
+snackbar.style.zIndex = '1000';
+snackbar.style.fontSize = '12px';
+document.body.appendChild(snackbar);
+
+// Show undo notification
+function showUndoSnackbar() {
+    snackbar.innerHTML = 'Item removed. <button id="undo-btn">Undo</button>';
+    snackbar.style.display = 'block';
+
+    document.getElementById('undo-btn').onclick = async () => {
+        try {
+            const result = await ipcRenderer.invoke('undo-remove');
+            if (result.success) {
+                await renderWatchlist();
+            } else {
+                alert('No item to undo.');
+            }
+        } catch (err) {
+            logError(`Undo failed: ${err.message}`);
+        } finally {
+            snackbar.style.display = 'none';
+        }
+    };
+
+    setTimeout(() => {
+        snackbar.style.display = 'none';
+    }, 5000);
+}
 
 // Handle the "Add" button click
 addBtn.addEventListener('click', async () => {
     try {
-        const itemId = input.value.trim(); // Get and trim input value
-        if (!itemId) return; // Do nothing if input is empty
+        const itemId = input.value.trim();
+        if (!itemId) return;
 
-        // Send the item ID to the main process to add to the watchlist
         await ipcRenderer.invoke('add-item', itemId);
-
-        // Clear the input field
         input.value = '';
-
-        // Refresh the watchlist display
         await renderWatchlist();
     } catch (err) {
         logError(`Add button error: ${err.message}`);
     }
 });
 
-// Handle clicks on the watchlist (for removing items)
-list.addEventListener('click', async (e) => {
-    try {
-        if (e.target.dataset.removeId) {
-            // Send remove request to main process using the item's ID
-            await ipcRenderer.invoke('remove-item', e.target.dataset.removeId);
-
-            // Refresh the watchlist display
-            await renderWatchlist();
-        }
-    } catch (err) {
-        logError(`Remove item error: ${err.message}`);
+// Keyboard: Enter key submits input
+input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        addBtn.click();
     }
 });
 
-// Fetch and display the current watchlist from the backend
+// Handle clicks on the watchlist (remove/edit)
+list.addEventListener('click', async (e) => {
+    try {
+        if (e.target.dataset.removeId) {
+            const confirmDelete = confirm('Are you sure you want to remove this item?');
+            if (confirmDelete) {
+                await ipcRenderer.invoke('remove-item', e.target.dataset.removeId);
+                await renderWatchlist();
+                showUndoSnackbar();
+            }
+        }
+
+        if (e.target.dataset.editId) {
+            const itemId = e.target.dataset.editId;
+            const newThreshold = prompt('Enter new threshold price:');
+            if (newThreshold && !isNaN(Number(newThreshold))) {
+                await ipcRenderer.invoke('edit-threshold', {
+                    id: itemId,
+                    threshold: Number(newThreshold)
+                });
+                await renderWatchlist();
+            }
+        }
+    } catch (err) {
+        logError(`Watchlist click error: ${err.message}`);
+    }
+});
+
+// Fetch and display the current watchlist
 async function renderWatchlist() {
     try {
-        const watchlist = await ipcRenderer.invoke('get-watchlist'); // Ask main process for watchlist
-        list.innerHTML = ''; // Clear the current list
+        const watchlist = await ipcRenderer.invoke('get-watchlist');
+        list.innerHTML = '';
 
-        // Loop through each item ID and create a list element with a remove button
-        watchlist.forEach(id => {
+        if (watchlist.length === 0) {
+            emptyStateMsg.style.display = 'block';
+            return;
+        } else {
+            emptyStateMsg.style.display = 'none';
+        }
+
+        watchlist.forEach(item => {
             const el = document.createElement('li');
-            el.innerHTML = `${id} <button data-remove-id="${id}">Remove</button>`;
-            list.appendChild(el); // Add to the list
+            el.innerHTML = formatItemHTML(item);
+            list.appendChild(el);
         });
     } catch (err) {
         logError(`Render watchlist error: ${err.message}`);
     }
 }
 
-// Automatically render the watchlist when the window loads
+// Initial render
 window.onload = renderWatchlist;

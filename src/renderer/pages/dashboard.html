@@ -3,12 +3,28 @@
 <head>
     <meta charset="UTF-8" />
     <title>Roblox Price Tracker - Dashboard</title>
+
+    <!-- Base styles -->
     <link rel="stylesheet" href="../styles/dashboard.css" />
+
+    <!-- Responsive styles -->
+    <link rel="stylesheet" href="../styles/responsive.css" />
 </head>
 <body>
     <h1>🎮 Roblox Price Dashboard</h1>
-    <button id="refreshBtn">🔁 Refresh Prices</button>
-    <div id="priceContainer"></div>
+
+    <!-- Manual refresh -->
+    <button id="refreshBtn" title="Refresh all prices" tabindex="1">🔁 Refresh Prices</button>
+
+    <!-- Auto-refresh toggle -->
+    <button id="auto-refresh-toggle" title="Toggle auto-refresh every 30s" tabindex="2">⏱️ Auto-Refresh: OFF</button>
+
+    <!-- Container for item cards or empty state -->
+    <div id="priceContainer" tabindex="3">
+        <p id="empty-state" class="empty-state">No items are currently being tracked.</p>
+    </div>
+
+    <!-- Dashboard script -->
     <script src="../js/dashboard.js"></script>
 </body>
 </html>

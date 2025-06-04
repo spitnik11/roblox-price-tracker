@@ -53,3 +53,13 @@ li {
         background: #a00;
         border-color: #c00;
     }
+
+/* ✅ Empty state message styling */
+.empty-state {
+    display: none;
+    margin-top: 20px;
+    text-align: center;
+    font-style: italic;
+    color: #888;
+    font-size: 12px;
+}

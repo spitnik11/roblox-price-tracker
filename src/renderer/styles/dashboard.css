@@ -3,8 +3,10 @@
     background-color: #111;
     color: #f4f4f4;
     image-rendering: pixelated;
+    padding: 1rem;
 }
 
+/* Item card styling */
 .item {
     background: #222;
     border: 2px solid #444;
@@ -13,7 +15,54 @@
     border-radius: 8px;
 }
 
+/* Static alert text */
 .alert {
     color: red;
     font-weight: bold;
+}
+
+/* Blinking alert highlight for price drop */
+.alert-highlight {
+    animation: blink 1s step-start 0s infinite;
+    background-color: rgba(255, 0, 0, 0.2);
+    border: 2px solid red;
+}
+
+/* Keyframes for blinking effect */
+@keyframes blink {
+    50% {
+        background-color: rgba(255, 0, 0, 0.4);
+    }
+}
+
+/* ✅ Empty state styling */
+.empty-state {
+    text-align: center;
+    font-style: italic;
+    color: #888;
+    margin-top: 2rem;
+}
+
+/* ✅ Button styling for tooltips & spacing */
+button[title] {
+    cursor: pointer;
+    margin: 0.5rem 0.5rem 0.5rem 0;
+}
+
+/* ✅ Responsive layout tweaks (fallback if no responsive.css) */
+@media (max-width: 600px) {
+    body {
+        font-size: 14px;
+    }
+
+    button {
+        display: block;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
