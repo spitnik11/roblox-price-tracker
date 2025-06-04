@@ -1,15 +1,26 @@
-jest.mock('electron', () => ({
-    ipcMain: {
-        handle: jest.fn(),
-    },
-    ipcRenderer: {
-        invoke: jest.fn().mockResolvedValue(true),
-    },
-}));
+describe('ipcRenderer mock tests', () => {
+    beforeEach(() => {
+        jest.resetModules(); // Clear cache between tests
 
-const { ipcRenderer } = require('electron');
+        jest.mock('electron', () => ({
+            ipcRenderer: {
+                invoke: jest.fn().mockResolvedValue(true),
+            },
+            ipcMain: {
+                handle: jest.fn(),
+            },
+        }));
+    });
 
-test('mock ipcRenderer.invoke works', async () => {
-    const result = await ipcRenderer.invoke('check-alert', { currentPrice: 500, threshold: 600 });
-    expect(result).toBe(true);
+    test('mock ipcRenderer.invoke works', async () => {
+        // Import after mocking
+        const { ipcRenderer } = require('electron');
+
+        const result = await ipcRenderer.invoke('check-alert', {
+            currentPrice: 500,
+            threshold: 600,
+        });
+
+        expect(result).toBe(true);
+    });
 });
