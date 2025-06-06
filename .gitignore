@@ -14,9 +14,12 @@ logs/
 .env.local
 .env.*.local
 .env.txt
+.env.backup
+*.env
 
-# macOS system files
+# System files
 .DS_Store
+Thumbs.db
 
 # VS Code and Visual Studio
 .vscode/
@@ -32,12 +35,11 @@ coverage/
 # Test snapshots
 __snapshots__/
 
-# OS or editor-generated files
-Thumbs.db
+# Editor crash logs and npm/yarn debug files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Optional: lock files (if using one package manager only)
+# Optional: lock files (uncomment if needed)
 # package-lock.json
 # yarn.lock
