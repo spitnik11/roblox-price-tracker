@@ -1,14 +1,13 @@
-// src/main/utils.js
-
 /**
  * Debounce function: delays execution of `func` until after `delay` ms
- * have passed since the last call. Useful for limiting rapid calls (e.g., typing events).
+ * have passed since the last call. Useful for limiting rapid events (e.g., input typing).
  */
 function debounce(func, delay) {
     let timeoutId;
     return function (...args) {
-        clearTimeout(timeoutId); // Reset timer
-        timeoutId = setTimeout(() => func.apply(this, args), delay); // Schedule new call
+        const context = this;
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func.apply(context, args), delay);
     };
 }
 
@@ -21,7 +20,7 @@ function formatPrice(num) {
 
 /**
  * Cooldown wrapper: wraps a function to allow execution only every `delay` ms
- * Similar to debounce but enforces delay between allowed executions
+ * Useful for rate-limiting expensive operations like fetch calls
  */
 function cooldown(fn, delay = 30000) {
     let lastCalled = 0;
@@ -35,8 +34,8 @@ function cooldown(fn, delay = 30000) {
 }
 
 /**
- * Legacy/global cooldown tracker (used before item-level cooldowns)
- * Can still be used for global actions like full list refresh
+ * Global refresh cooldown tracker.
+ * Use for actions like full-dashboard refresh.
  */
 let lastRefreshTime = 0;
 
@@ -49,7 +48,7 @@ function canRefresh() {
     return false;
 }
 
-// Export all utilities in CommonJS format
+// Export for use in both renderer and main
 module.exports = {
     debounce,
     formatPrice,

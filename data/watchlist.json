@@ -1,0 +1,20 @@
+{
+    "12345": {
+        "id": "12345",
+        "thresholdBelow": 1500,
+        "thresholdAbove": 3000,
+        "percentDrop": 15
+    },
+    "67890": {
+        "id": "67890",
+        "thresholdBelow": 500,
+        "thresholdAbove": 1000,
+        "percentDrop": 10
+    },
+    "112233": {
+        "id": "112233",
+        "thresholdBelow": 800,
+        "thresholdAbove": 1600,
+        "percentDrop": 20
+    }
+}

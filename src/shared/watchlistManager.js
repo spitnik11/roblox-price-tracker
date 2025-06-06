@@ -1,17 +1,17 @@
 const fs = require('fs');
 const path = require('path');
 
-// File path to persist the watchlist
+// Path to watchlist JSON file
 const WATCHLIST_FILE = path.join(__dirname, '../../data/watchlist.json');
 
-// In-memory watchlist: { [id]: { id, threshold } }
+// In-memory storage of the watchlist
 let watchlist = {};
 
-// Store last removed item for undo functionality
+// Last removed item (for undo)
 let lastRemovedItem = null;
 
 /**
- * Load the watchlist from file if it exists
+ * Load the watchlist from disk
  */
 function loadWatchlist() {
     try {
@@ -26,11 +26,22 @@ function loadWatchlist() {
 }
 
 /**
- * Save the current watchlist to file
+ * Save the current watchlist to disk
  */
 function saveWatchlist() {
     try {
-        fs.writeFileSync(WATCHLIST_FILE, JSON.stringify(watchlist, null, 2));
+        const clean = Object.fromEntries(
+            Object.entries(watchlist).map(([id, item]) => [
+                id,
+                {
+                    id: item.id,
+                    thresholdBelow: item.thresholdBelow ?? null,
+                    thresholdAbove: item.thresholdAbove ?? null,
+                    percentDrop: item.percentDrop ?? null
+                }
+            ])
+        );
+        fs.writeFileSync(WATCHLIST_FILE, JSON.stringify(clean, null, 2));
     } catch (err) {
         console.error('Failed to save watchlist:', err);
     }
@@ -44,11 +55,16 @@ function getWatchlist() {
 }
 
 /**
- * Add item to watchlist with optional threshold
+ * Add item to watchlist
  */
-function addItem(id, threshold = null) {
+function addItem(id, thresholds = {}) {
     if (!watchlist[id]) {
-        watchlist[id] = { id, threshold };
+        watchlist[id] = {
+            id,
+            thresholdBelow: thresholds.thresholdBelow ?? null,
+            thresholdAbove: thresholds.thresholdAbove ?? null,
+            percentDrop: thresholds.percentDrop ?? null
+        };
         saveWatchlist();
     } else {
         throw new Error('Item already exists in watchlist');
@@ -56,11 +72,11 @@ function addItem(id, threshold = null) {
 }
 
 /**
- * Remove item from watchlist (with undo support)
+ * Remove item from watchlist
  */
 function removeItem(id) {
     if (watchlist[id]) {
-        lastRemovedItem = { ...watchlist[id] }; // Store for undo
+        lastRemovedItem = { ...watchlist[id] };
         delete watchlist[id];
         saveWatchlist();
     }
@@ -74,40 +90,63 @@ function undoLastRemove() {
         watchlist[lastRemovedItem.id] = lastRemovedItem;
         saveWatchlist();
         const restored = lastRemovedItem;
-        lastRemovedItem = null; // Clear after use
+        lastRemovedItem = null;
         return restored;
     }
     return null;
 }
 
 /**
- * Update threshold for an item
+ * Update thresholds for an item
  */
-function updateThreshold(id, threshold) {
-    if (watchlist[id]) {
-        watchlist[id].threshold = threshold;
-        saveWatchlist();
-    } else {
-        throw new Error('Item not found in watchlist');
-    }
+function updateThresholds(id, thresholds = {}) {
+    if (!watchlist[id]) throw new Error('Item not found in watchlist');
+
+    watchlist[id].thresholdBelow = thresholds.thresholdBelow ?? null;
+    watchlist[id].thresholdAbove = thresholds.thresholdAbove ?? null;
+    watchlist[id].percentDrop = thresholds.percentDrop ?? null;
+    saveWatchlist();
 }
 
 /**
- * Get a specific item's info
+ * Get single item by ID
  */
 function getItem(id) {
     return watchlist[id] || null;
 }
 
-// Load watchlist from disk on startup
+/**
+ * Format item HTML for display in the Watchlist UI
+ * Includes canvas for sparkline + buttons for remove/edit/details
+ */
+function formatItemHTML(item) {
+    const below = item.thresholdBelow !== null ? `Below: R$${item.thresholdBelow}` : '';
+    const above = item.thresholdAbove !== null ? `Above: R$${item.thresholdAbove}` : '';
+    const drop = item.percentDrop !== null ? `Drop: ${item.percentDrop}%` : '';
+    const thresholds = [below, above, drop].filter(Boolean).join(', ');
+
+    return `
+        <strong>ID: ${item.id}</strong><br/>
+        ${thresholds ? `<span>Threshold: ${thresholds}</span><br/>` : ''}
+        <canvas class="sparkline" data-id="${item.id}" height="30" width="100"></canvas>
+        <div>
+            <button data-remove-id="${item.id}">Remove</button>
+            <button data-edit-id="${item.id}">Edit</button>
+            <button class="details-btn" data-details-id="${item.id}">Details</button>
+        </div>
+    `;
+}
+
+// Load watchlist on module init
 loadWatchlist();
 
-// Export manager API
+// Export functions
 module.exports = {
     getWatchlist,
     addItem,
     removeItem,
-    updateThreshold,
+    updateThresholds,
     getItem,
-    undoLastRemove, // Exported for Task 4 undo
+    undoLastRemove,
+    formatItemHTML
 };

@@ -1,23 +1,24 @@
-// src/main/ipc.js
-
-// Electron IPC module
 const { ipcMain } = require('electron');
 
-// Feature-specific IPC modules
+// Modular feature-specific handlers
 require('./ipc/watchlist-ipc')(ipcMain);
 require('./ipc/alerts-ipc')(ipcMain);
 
-// Roblox price refresh handler with per-item cooldown
-const { fetchLimitedPrice } = require('./api');
+// API functions
+const {
+    fetchLimitedPrice,
+    searchItemsByName,
+    fetchItemDetails,
+    getMockPriceHistory
+} = require('./api');
 
-// Watchlist manager with threshold and undo support
-const watchlistManager = require('./watchlist'); // Adjust path if needed
+const watchlistManager = require('./watchlist');
 
-// Cooldown tracking per item
+// Cooldown map to prevent rapid refreshes
 const itemCooldownMap = {};
 
 /**
- * Check if the specified item can be refreshed based on 30s cooldown
+ * Helper: Check 30-second cooldown per item
  */
 function canRefreshItem(itemId) {
     const now = Date.now();
@@ -27,14 +28,13 @@ function canRefreshItem(itemId) {
         itemCooldownMap[itemId] = now;
         return true;
     }
-
     return false;
 }
 
 /**
- * Handles refresh-data request from renderer with item-specific cooldown
+ * Handle price refresh from dashboard (with per-item cooldown)
  */
-ipcMain.handle('refresh-data', async (event, itemId) => {
+ipcMain.handle('refresh-data', async (_event, itemId) => {
     if (!canRefreshItem(itemId)) {
         return { error: 'Cooldown in effect' };
     }
@@ -48,29 +48,53 @@ ipcMain.handle('refresh-data', async (event, itemId) => {
 });
 
 /**
- * Handle threshold editing request from renderer
+ * Handle threshold update from UI
  */
-ipcMain.handle('edit-threshold', async (event, { id, threshold }) => {
+ipcMain.handle('edit-thresholds', async (_event, { id, thresholds }) => {
     try {
-        await watchlistManager.updateThreshold(id, threshold);
+        watchlistManager.updateThresholds(id, thresholds);
         return { success: true };
     } catch (err) {
-        return { error: 'Failed to update threshold' };
+        return { error: 'Failed to update thresholds' };
     }
 });
 
 /**
- * Handle undo of last removed item
+ * Handle undo for last removed item from watchlist
  */
 ipcMain.handle('undo-remove', async () => {
     try {
         const restoredItem = watchlistManager.undoLastRemove();
-        if (restoredItem) {
-            return { success: true, item: restoredItem };
-        } else {
-            return { error: 'No item to undo' };
-        }
+        return restoredItem
+            ? { success: true, item: restoredItem }
+            : { error: 'No item to undo' };
     } catch (err) {
         return { error: 'Undo failed' };
     }
+});
+
+/**
+ * Handle item search by name for autocomplete input
+ */
+ipcMain.handle('search-items', async (_event, query) => {
+    return await searchItemsByName(query);
+});
+
+/**
+ * Handle detailed modal info request for a given item
+ */
+ipcMain.handle('get-item-details', async (_event, itemId) => {
+    try {
+        const details = await fetchItemDetails(itemId);
+        return details;
+    } catch (err) {
+        return { error: 'Unable to fetch item details' };
+    }
+});
+
+/**
+ * Handle price history request for sparklines
+ */
+ipcMain.handle('get-price-history', async (_event, itemId) => {
+    return getMockPriceHistory(itemId);
 });

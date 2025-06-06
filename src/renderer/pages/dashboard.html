@@ -11,20 +11,37 @@
     <link rel="stylesheet" href="../styles/responsive.css" />
 </head>
 <body>
-    <h1>🎮 Roblox Price Dashboard</h1>
+    <h1>Roblox Price Dashboard</h1>
 
     <!-- Manual refresh -->
-    <button id="refreshBtn" title="Refresh all prices" tabindex="1">🔁 Refresh Prices</button>
+    <button id="refreshBtn" title="Refresh all prices" tabindex="1">Refresh Prices</button>
 
     <!-- Auto-refresh toggle -->
-    <button id="auto-refresh-toggle" title="Toggle auto-refresh every 30s" tabindex="2">⏱️ Auto-Refresh: OFF</button>
+    <button id="auto-refresh-toggle" title="Toggle auto-refresh every 30s" tabindex="2">Auto-Refresh: OFF</button>
 
     <!-- Container for item cards or empty state -->
     <div id="priceContainer" tabindex="3">
         <p id="empty-state" class="empty-state">No items are currently being tracked.</p>
     </div>
 
+    <!-- Details Modal -->
+    <div id="details-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="modal-close" class="modal-close">X</span>
+            <img id="modal-thumbnail" src="" alt="Item Thumbnail" />
+            <h3 id="modal-name">Item Name</h3>
+            <p id="modal-creator">Creator: N/A</p>
+            <p id="modal-description">Description goes here.</p>
+            <p id="modal-rap">RAP: N/A</p>
+            <p id="modal-volume">Volume: N/A</p>
+            <a id="modal-link" href="#" target="_blank">View on Roblox</a>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
     <!-- Dashboard script -->
-    <script src="../js/dashboard.js"></script>
+    <script src="../js/dashboard.js" type="module"></script>
 </body>
 </html>

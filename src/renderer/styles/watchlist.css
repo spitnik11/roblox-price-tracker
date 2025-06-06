@@ -1,7 +1,49 @@
-﻿body {
+﻿/* =======================
+   THEME VARIABLES
+======================= */
+body {
+    --bg-color: #111;
+    --text-color: #f4f4f4;
+    --input-bg: #222;
+    --input-border: #444;
+    --button-bg: #333;
+    --button-border: #555;
+    --list-bg: #1e1e1e;
+    --list-border: #333;
+    --highlight-bg: #333;
+    --delete-btn-bg: #a00;
+    --delete-btn-border: #c00;
+    --search-bg: #1a1a1a;
+    --search-border: #333;
+    --search-hover: #333;
+    --toggle-label: #f4f4f4;
+}
+
+    body[data-theme='light'] {
+        --bg-color: #f9f9f9;
+        --text-color: #111;
+        --input-bg: #fff;
+        --input-border: #ccc;
+        --button-bg: #e0e0e0;
+        --button-border: #aaa;
+        --list-bg: #fff;
+        --list-border: #ddd;
+        --highlight-bg: #eee;
+        --delete-btn-bg: #d33;
+        --delete-btn-border: #f44;
+        --search-bg: #f0f0f0;
+        --search-border: #ccc;
+        --search-hover: #ddd;
+        --toggle-label: #111;
+    }
+
+/* =======================
+   GLOBAL STYLES
+======================= */
+body {
     font-family: 'Press Start 2P', monospace;
-    background-color: #111;
-    color: #f4f4f4;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     padding: 20px;
     image-rendering: pixelated;
 }
@@ -15,10 +57,11 @@ input {
     font-family: inherit;
     padding: 6px;
     font-size: 12px;
-    border: 2px solid #444;
-    background: #222;
-    color: #fff;
+    border: 2px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-color);
     outline: none;
+    margin-bottom: 4px;
 }
 
 button {
@@ -26,9 +69,9 @@ button {
     margin-left: 8px;
     padding: 6px 10px;
     font-size: 12px;
-    background: #333;
-    color: #fff;
-    border: 2px solid #555;
+    background: var(--button-bg);
+    color: var(--text-color);
+    border: 2px solid var(--button-border);
     cursor: pointer;
 }
 
@@ -39,22 +82,27 @@ ul {
 }
 
 li {
-    background: #1e1e1e;
+    background: var(--list-bg);
     padding: 8px;
     margin-bottom: 8px;
-    border: 2px solid #333;
+    border: 2px solid var(--list-border);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 11px;
+    gap: 4px;
+    cursor: pointer;
 }
 
     li button {
-        margin: 0;
-        background: #a00;
-        border-color: #c00;
+        margin-top: 6px;
+        background: var(--delete-btn-bg);
+        border-color: var(--delete-btn-border);
     }
 
-/* ✅ Empty state message styling */
+/* =======================
+   COMPONENTS
+======================= */
 .empty-state {
     display: none;
     margin-top: 20px;
@@ -62,4 +110,120 @@ li {
     font-style: italic;
     color: #888;
     font-size: 12px;
+}
+
+#search-results {
+    background-color: var(--search-bg);
+    border: 2px solid var(--search-border);
+    max-height: 140px;
+    overflow-y: auto;
+    margin-top: 4px;
+    padding: 4px;
+    font-size: 11px;
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+}
+
+.search-result {
+    padding: 6px;
+    border-bottom: 1px solid var(--search-border);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .search-result:hover {
+        background-color: var(--search-hover);
+    }
+
+    .search-result button {
+        background: var(--button-bg);
+        border-color: var(--button-border);
+        font-size: 10px;
+        padding: 2px 6px;
+        margin-left: 8px;
+        cursor: pointer;
+    }
+
+    .search-result.empty {
+        color: #aaa;
+        font-style: italic;
+        text-align: center;
+        padding: 6px;
+    }
+
+/* =======================
+   TOGGLES
+======================= */
+.toggle-wrapper {
+    margin-top: 10px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 10px;
+    color: var(--toggle-label);
+}
+
+input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-left: 6px;
+}
+
+/* =======================
+   ITEM DETAIL MODAL
+======================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: var(--list-bg);
+    color: var(--text-color);
+    border: 2px solid var(--list-border);
+    padding: 20px;
+    width: 320px;
+    font-size: 11px;
+    position: relative;
+    box-shadow: 0 0 10px #000;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+    .modal-content h2 {
+        font-size: 13px;
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+
+    .modal-content p {
+        margin: 6px 0;
+        line-height: 1.4;
+    }
+
+    .modal-content a {
+        color: #5bf;
+        text-decoration: underline;
+        word-break: break-word;
+    }
+
+.modal-close {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-color);
+    background: none;
+    border: none;
 }

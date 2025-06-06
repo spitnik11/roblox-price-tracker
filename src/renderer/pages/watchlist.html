@@ -8,17 +8,63 @@
 <body>
     <h1>Watchlist</h1>
 
-    <!-- Input + Add button -->
-    <input id="item-id-input" placeholder="Enter Item ID" />
-    <button id="add-btn">Add to Watchlist</button>
+    <!-- Theme Toggle -->
+    <div class="toggle-wrapper">
+        <label>
+            🌓 Theme
+            <input type="checkbox" id="toggle-theme" />
+        </label>
+    </div>
 
-    <!-- Watchlist container -->
-    <ul id="watchlist"></ul>
+    <!-- Alert Toggle Settings -->
+    <div class="toggle-wrapper">
+        <label>
+            🔈 Sound Alerts
+            <input type="checkbox" id="toggle-sound" />
+        </label>
+        <label>
+            ⚡ Visual Alerts
+            <input type="checkbox" id="toggle-visual" />
+        </label>
+    </div>
 
-    <!-- Empty state message -->
+    <!-- Search by Item Name -->
+    <div class="search-section">
+        <input id="search-input" type="text" placeholder="Search items by name..." />
+        <ul id="search-results"></ul>
+    </div>
+
+    <!-- Manual Item ID Entry -->
+    <div class="manual-entry">
+        <input id="item-id-input" placeholder="Enter Item ID" />
+        <div class="threshold-inputs">
+            <input id="below-input" type="number" placeholder="Price Below" />
+            <input id="above-input" type="number" placeholder="Price Above" />
+            <input id="percent-input" type="number" placeholder="% Drop" />
+        </div>
+        <button id="add-btn">Add to Watchlist</button>
+    </div>
+
+    <!-- Watchlist Items -->
+    <ul id="watchlist" class="watchlist-list"></ul>
     <p id="empty-state" class="empty-state">Your watchlist is currently empty.</p>
 
-    <!-- Script -->
-    <script src="../js/watchlist.js"></script>
+    <!-- ✅ Item Detail Modal -->
+    <div id="item-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <span id="modal-close" class="modal-close">✖</span>
+            <h2 id="modal-name">Item Name</h2>
+            <p><strong>RAP:</strong> <span id="modal-rap">-</span></p>
+            <p><strong>Volume:</strong> <span id="modal-volume">-</span></p>
+            <p><strong>Description:</strong> <span id="modal-description">No description available.</span></p>
+            <p><a id="modal-link" href="#" target="_blank">View on Rolimons</a></p>
+            <div id="modal-price-history">
+                <!-- Optional price history table -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Script -->
+    <script type="module" src="../js/watchlist.js"></script>
 </body>
 </html>
