@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8" />
     <title>Roblox Watchlist</title>
+    <link rel="stylesheet" href="../styles/global.css" />
     <link rel="stylesheet" href="../styles/watchlist.css" />
 </head>
 <body>
-    <h1>Watchlist</h1>
+    <h1 class="text-center">Watchlist</h1>
 
     <!-- Theme Toggle -->
-    <div class="toggle-wrapper">
+    <div class="toggle-wrapper flex">
         <label>
-            🌓 Theme
+            <img src="../../assets/icons/moon.png" id="theme-icon" class="icon" alt="Theme" />
             <input type="checkbox" id="toggle-theme" />
         </label>
     </div>
 
     <!-- Alert Toggle Settings -->
-    <div class="toggle-wrapper">
+    <div class="toggle-wrapper flex">
         <label>
-            🔈 Sound Alerts
+            <img src="../../assets/icons/sound.png" class="icon" alt="Sound Alerts" />
             <input type="checkbox" id="toggle-sound" />
         </label>
         <label>
-            ⚡ Visual Alerts
+            <img src="../../assets/icons/eye.png" class="icon" alt="Visual Alerts" />
             <input type="checkbox" id="toggle-visual" />
         </label>
     </div>
@@ -37,34 +38,50 @@
     <!-- Manual Item ID Entry -->
     <div class="manual-entry">
         <input id="item-id-input" placeholder="Enter Item ID" />
-        <div class="threshold-inputs">
+        <div class="threshold-inputs flex">
             <input id="below-input" type="number" placeholder="Price Below" />
             <input id="above-input" type="number" placeholder="Price Above" />
             <input id="percent-input" type="number" placeholder="% Drop" />
         </div>
-        <button id="add-btn">Add to Watchlist</button>
+        <button id="add-btn" class="btn">
+            <img src="../../assets/icons/plus.png" class="icon" alt="Add" />
+            Add to Watchlist
+        </button>
     </div>
 
     <!-- Watchlist Items -->
     <ul id="watchlist" class="watchlist-list"></ul>
-    <p id="empty-state" class="empty-state">Your watchlist is currently empty.</p>
+    <p id="empty-state" class="empty-state text-center">Your watchlist is currently empty.</p>
 
     <!-- ✅ Item Detail Modal -->
-    <div id="item-modal" class="modal-overlay hidden">
+    <div id="item-modal" class="modal frame hidden">
         <div class="modal-content">
-            <span id="modal-close" class="modal-close">✖</span>
+            <button id="modal-close" class="button-icon">
+                <img src="../../assets/icons/trash.png" class="icon" alt="Close" />
+            </button>
             <h2 id="modal-name">Item Name</h2>
-            <p><strong>RAP:</strong> <span id="modal-rap">-</span></p>
-            <p><strong>Volume:</strong> <span id="modal-volume">-</span></p>
-            <p><strong>Description:</strong> <span id="modal-description">No description available.</span></p>
-            <p><a id="modal-link" href="#" target="_blank">View on Rolimons</a></p>
+            <p>
+                <img src="../../assets/icons/sound.png" class="icon" />
+                RAP: <span id="modal-rap">-</span>
+            </p>
+            <p>
+                <img src="../../assets/icons/eye.png" class="icon" />
+                Volume: <span id="modal-volume">-</span>
+            </p>
+            <p>
+                <img src="../../assets/icons/hat.png" class="icon" />
+                Description: <span id="modal-description">No description available.</span>
+            </p>
+            <p>
+                <a id="modal-link" href="#" target="_blank">View on Rolimons</a>
+            </p>
             <div id="modal-price-history">
-                <!-- Optional price history table -->
+                <!-- Optional price history -->
             </div>
         </div>
     </div>
 
-    <!-- Main Script -->
+    <!-- JS -->
     <script type="module" src="../js/watchlist.js"></script>
 </body>
 </html>

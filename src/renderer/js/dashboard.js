@@ -20,6 +20,12 @@ const modalVolume = document.getElementById('modal-volume');
 const modalThumbnail = document.getElementById('modal-thumbnail');
 const modalLink = document.getElementById('modal-link');
 
+// Theme & alert toggles
+const toggleTheme = document.getElementById('toggle-theme');
+const toggleSound = document.getElementById('toggle-sound');
+const toggleVisual = document.getElementById('toggle-visual');
+const themeIcon = document.getElementById('theme-icon');
+
 // Toast element
 const toast = document.getElementById('toast');
 function showToast(message) {
@@ -33,28 +39,51 @@ function showToast(message) {
     };
 
     toast.addEventListener('click', hideToast);
-
-    setTimeout(() => {
-        hideToast();
-    }, 3000);
+    setTimeout(hideToast, 3000);
 }
+
+// Sound helper
+function playSound(file) {
+    if (toggleSound?.checked) {
+        const audio = new Audio(`../../assets/sounds/${file}`);
+        audio.play().catch(err => logError('Sound error: ' + err.message));
+    }
+}
+
+// Theme handling
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.body.setAttribute('data-theme', savedTheme);
+toggleTheme.checked = savedTheme === 'light';
+themeIcon.src = savedTheme === 'light'
+    ? '../../assets/icons/sun.png'
+    : '../../assets/icons/moon.png';
+
+toggleTheme.addEventListener('change', () => {
+    const newTheme = toggleTheme.checked ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    themeIcon.src = newTheme === 'light'
+        ? '../../assets/icons/sun.png'
+        : '../../assets/icons/moon.png';
+});
+
+// Alert preference syncing
+toggleSound.checked = localStorage.getItem('alertSound') === 'true';
+toggleVisual.checked = localStorage.getItem('alertVisual') === 'true';
+
+toggleSound.addEventListener('change', () => {
+    localStorage.setItem('alertSound', toggleSound.checked);
+});
+toggleVisual.addEventListener('change', () => {
+    localStorage.setItem('alertVisual', toggleVisual.checked);
+});
 
 // Auto-refresh state
 let autoRefresh = false;
 let autoRefreshInterval = null;
 
-// In-memory price history
+// Price history
 const priceHistoryCache = {};
-
-// Helpers for alert preferences
-function isAlertSoundEnabled() {
-    return localStorage.getItem('alertSound') === 'true';
-}
-function isAlertVisualEnabled() {
-    return localStorage.getItem('alertVisual') === 'true';
-}
-
-// Track 10 latest prices per item
 function updateHistory(id, price) {
     if (!priceHistoryCache[id]) priceHistoryCache[id] = [];
     priceHistoryCache[id].push(price);
@@ -82,15 +111,14 @@ function renderItem(item) {
         <button class="refresh-one" data-id="${item.id}">Refresh</button>
         <button class="details-btn" data-id="${item.id}">Details</button>
     `;
-
     return el;
 }
 
-// Refresh and render full list
+// Refresh UI
 async function updateUI(watchlist) {
     itemsContainer.innerHTML = '';
 
-    if (watchlist.length === 0) {
+    if (!watchlist || watchlist.length === 0) {
         emptyStateMsg.style.display = 'block';
         return;
     } else {
@@ -121,18 +149,14 @@ async function updateUI(watchlist) {
         const card = el;
 
         if (item.alert) {
-            if (isAlertVisualEnabled()) {
+            if (toggleVisual?.checked) {
                 card.classList.add('alert-highlight');
                 card.style.animation = 'flash 1s ease';
-                setTimeout(() => {
-                    card.style.animation = '';
-                }, 1000);
+                setTimeout(() => card.style.animation = '', 1000);
                 showToast(`Alert triggered for item ${item.id}`);
             }
-
-            if (isAlertSoundEnabled()) {
-                const chime = new Audio('assets/sounds/alert.mp3');
-                chime.play().catch(err => console.warn('Audio failed to play:', err));
+            if (toggleSound?.checked) {
+                playSound('price-alert.mp3');
             }
         }
 
@@ -160,8 +184,10 @@ async function updateUI(watchlist) {
                 sparkline(priceHistoryCache[itemId], { canvas: document.getElementById(`chart-${itemId}`) });
 
                 const card = document.getElementById(`item-${itemId}`);
-                if (alert) {
+                if (alert && toggleVisual?.checked) {
                     card.classList.add('alert-highlight');
+                    showToast(`Price alert: ${itemId}`);
+                    playSound('price-alert.mp3');
                 } else {
                     card.classList.remove('alert-highlight');
                 }
@@ -195,7 +221,7 @@ async function updateUI(watchlist) {
     });
 }
 
-// Manual refresh all
+// Manual refresh
 async function refreshAll() {
     try {
         const watchlist = await ipcRenderer.invoke('get-watchlist');
@@ -206,7 +232,7 @@ async function refreshAll() {
     }
 }
 
-// Toggle auto-refresh every 60s
+// Auto-refresh toggle
 function toggleAutoRefresh() {
     autoRefresh = !autoRefresh;
     if (autoRefresh) {
@@ -219,7 +245,7 @@ function toggleAutoRefresh() {
     }
 }
 
-// Page ready
+// Page load
 window.onload = async () => {
     try {
         const watchlist = await ipcRenderer.invoke('get-watchlist');
@@ -231,9 +257,11 @@ window.onload = async () => {
 
     refreshBtn.addEventListener('click', refreshAll);
     autoRefreshToggle.addEventListener('click', toggleAutoRefresh);
+
     modalClose.addEventListener('click', () => {
         modal.style.display = 'none';
     });
+
     window.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && modal.style.display === 'flex') {
             modal.style.display = 'none';

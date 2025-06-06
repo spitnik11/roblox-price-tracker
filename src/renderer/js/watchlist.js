@@ -19,6 +19,7 @@ const searchResults = document.getElementById('search-results');
 const toggleSound = document.getElementById('toggle-sound');
 const toggleVisual = document.getElementById('toggle-visual');
 const toggleTheme = document.getElementById('toggle-theme');
+const themeIcon = document.getElementById('theme-icon');
 
 // Modal DOM references
 const modal = document.getElementById('item-modal');
@@ -29,15 +30,29 @@ const modalVolume = document.getElementById('modal-volume');
 const modalDescription = document.getElementById('modal-description');
 const modalLink = document.getElementById('modal-link');
 
+// Play sound if enabled
+function playSound(filename) {
+    if (toggleSound.checked) {
+        const audio = new Audio(`../../assets/sounds/${filename}`);
+        audio.play().catch(err => logError('Sound error: ' + err.message));
+    }
+}
+
 // Load and apply saved theme
 const savedTheme = localStorage.getItem('theme') || 'dark';
 document.body.setAttribute('data-theme', savedTheme);
 toggleTheme.checked = savedTheme === 'light';
+themeIcon.src = savedTheme === 'light'
+    ? '../../assets/icons/sun.png'
+    : '../../assets/icons/moon.png';
 
 toggleTheme.addEventListener('change', () => {
     const newTheme = toggleTheme.checked ? 'light' : 'dark';
     document.body.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
+    themeIcon.src = newTheme === 'light'
+        ? '../../assets/icons/sun.png'
+        : '../../assets/icons/moon.png';
 });
 
 // Load alert settings
@@ -111,8 +126,10 @@ addBtn.addEventListener('click', async () => {
         percentInput.value = '';
 
         await renderWatchlist();
+        playSound('success.mp3');
     } catch (err) {
         logError('Add item error: ' + err.message);
+        playSound('error.mp3');
     }
 });
 
@@ -128,6 +145,7 @@ list.addEventListener('click', async (e) => {
                 await ipcRenderer.invoke('remove-item', e.target.dataset.removeId);
                 await renderWatchlist();
                 showUndoSnackbar();
+                playSound('success.mp3');
             }
         }
 
@@ -145,6 +163,7 @@ list.addEventListener('click', async (e) => {
             });
 
             await renderWatchlist();
+            playSound('success.mp3');
         }
 
         if (e.target.classList.contains('details-btn')) {
@@ -162,6 +181,7 @@ list.addEventListener('click', async (e) => {
         }
     } catch (err) {
         logError('Edit/remove/details error: ' + err.message);
+        playSound('error.mp3');
     }
 });
 
@@ -237,6 +257,11 @@ async function renderWatchlist() {
         watchlist.forEach(item => {
             const el = document.createElement('li');
             el.innerHTML = formatItemHTML(item);
+
+            if (item.alert && toggleVisual.checked) {
+                el.classList.add('alert-highlight');
+                playSound('price-alert.mp3');
+            }
 
             const canvas = document.createElement('canvas');
             canvas.width = 80;

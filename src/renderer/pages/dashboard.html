@@ -5,35 +5,66 @@
     <title>Roblox Price Tracker - Dashboard</title>
 
     <!-- Base styles -->
+    <link rel="stylesheet" href="../styles/global.css" />
     <link rel="stylesheet" href="../styles/dashboard.css" />
-
-    <!-- Responsive styles -->
     <link rel="stylesheet" href="../styles/responsive.css" />
 </head>
 <body>
-    <h1>Roblox Price Dashboard</h1>
+    <h1 class="text-center">Roblox Price Dashboard</h1>
 
-    <!-- Manual refresh -->
-    <button id="refreshBtn" title="Refresh all prices" tabindex="1">Refresh Prices</button>
+    <!-- Control Bar -->
+    <div class="flex">
+        <button id="refreshBtn" class="btn" title="Refresh all prices" tabindex="1">
+            <img src="../../assets/icons/refresh.png" class="icon" alt="Refresh" />
+            Refresh Prices
+        </button>
 
-    <!-- Auto-refresh toggle -->
-    <button id="auto-refresh-toggle" title="Toggle auto-refresh every 30s" tabindex="2">Auto-Refresh: OFF</button>
+        <button id="auto-refresh-toggle" class="btn" title="Toggle auto-refresh every 30s" tabindex="2">
+            <img src="../../assets/icons/sound.png" class="icon" alt="Auto-Refresh" />
+            Auto-Refresh: OFF
+        </button>
 
-    <!-- Container for item cards or empty state -->
-    <div id="priceContainer" tabindex="3">
-        <p id="empty-state" class="empty-state">No items are currently being tracked.</p>
+        <!-- Theme Toggle -->
+        <label class="flex">
+            <img src="../../assets/icons/moon.png" id="theme-icon" class="icon" alt="Theme Toggle" />
+            <input type="checkbox" id="toggle-theme" />
+        </label>
+
+        <!-- Alert Toggles -->
+        <label>
+            <img src="../../assets/icons/sound.png" class="icon" alt="Sound Alerts" />
+            <input type="checkbox" id="toggle-sound" />
+        </label>
+
+        <label>
+            <img src="../../assets/icons/eye.png" class="icon" alt="Visual Alerts" />
+            <input type="checkbox" id="toggle-visual" />
+        </label>
     </div>
 
-    <!-- Details Modal -->
-    <div id="details-modal" class="modal" style="display: none;">
+    <!-- Item Display -->
+    <div id="priceContainer" tabindex="3">
+        <p id="empty-state" class="empty-state text-center">No items are currently being tracked.</p>
+    </div>
+
+    <!-- Item Modal -->
+    <div id="details-modal" class="modal frame hidden">
         <div class="modal-content">
-            <span id="modal-close" class="modal-close">X</span>
-            <img id="modal-thumbnail" src="" alt="Item Thumbnail" />
+            <button id="modal-close" class="button-icon">
+                <img src="../../assets/icons/trash.png" class="icon" alt="Close" />
+            </button>
+            <img id="modal-thumbnail" src="" alt="Item Thumbnail" class="icon-lg" />
             <h3 id="modal-name">Item Name</h3>
             <p id="modal-creator">Creator: N/A</p>
             <p id="modal-description">Description goes here.</p>
-            <p id="modal-rap">RAP: N/A</p>
-            <p id="modal-volume">Volume: N/A</p>
+            <p>
+                <img src="../../assets/icons/sound.png" class="icon" />
+                RAP: <span id="modal-rap">N/A</span>
+            </p>
+            <p>
+                <img src="../../assets/icons/eye.png" class="icon" />
+                Volume: <span id="modal-volume">N/A</span>
+            </p>
             <a id="modal-link" href="#" target="_blank">View on Roblox</a>
         </div>
     </div>
@@ -41,7 +72,7 @@
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
 
-    <!-- Dashboard script -->
+    <!-- Script -->
     <script src="../js/dashboard.js" type="module"></script>
 </body>
 </html>
