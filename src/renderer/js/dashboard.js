@@ -24,6 +24,7 @@ const modalLink = document.getElementById('modal-link');
 const toggleTheme = document.getElementById('toggle-theme');
 const toggleSound = document.getElementById('toggle-sound');
 const toggleVisual = document.getElementById('toggle-visual');
+const toggleAnimations = document.getElementById('toggle-animations');
 const themeIcon = document.getElementById('theme-icon');
 
 // Toast element
@@ -67,15 +68,19 @@ toggleTheme.addEventListener('change', () => {
         : '../../assets/icons/moon.png';
 });
 
-// Alert preference syncing
+// Alert & animation preference syncing
 toggleSound.checked = localStorage.getItem('alertSound') === 'true';
 toggleVisual.checked = localStorage.getItem('alertVisual') === 'true';
+toggleAnimations.checked = localStorage.getItem('animations') !== 'false';
 
 toggleSound.addEventListener('change', () => {
     localStorage.setItem('alertSound', toggleSound.checked);
 });
 toggleVisual.addEventListener('change', () => {
     localStorage.setItem('alertVisual', toggleVisual.checked);
+});
+toggleAnimations.addEventListener('change', () => {
+    localStorage.setItem('animations', toggleAnimations.checked);
 });
 
 // Auto-refresh state
@@ -97,6 +102,11 @@ function renderItem(item) {
     const el = document.createElement('div');
     el.className = 'item';
     el.id = `item-${item.id}`;
+
+    // Respect animation toggle
+    if (localStorage.getItem('animations') === 'false') {
+        el.classList.add('no-anim');
+    }
 
     if (item.alert) el.classList.add('alert-highlight');
 

@@ -46,6 +46,7 @@ body {
     color: var(--text-color);
     padding: 20px;
     image-rendering: pixelated;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1 {
@@ -73,7 +74,13 @@ button {
     color: var(--text-color);
     border: 2px solid var(--button-border);
     cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
+
+    button:hover {
+        background-color: var(--highlight-bg);
+        transform: scale(1.05);
+    }
 
 ul {
     margin-top: 20px;
@@ -92,13 +99,30 @@ li {
     font-size: 11px;
     gap: 4px;
     cursor: pointer;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInUp 0.4s ease-out forwards;
 }
 
-    li button {
-        margin-top: 6px;
-        background: var(--delete-btn-bg);
-        border-color: var(--delete-btn-border);
+    /* Animation override for disabled users */
+    li.no-anim {
+        animation: none !important;
+        transform: none !important;
+        opacity: 1 !important;
     }
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+li button {
+    margin-top: 6px;
+    background: var(--delete-btn-bg);
+    border-color: var(--delete-btn-border);
+}
 
 /* =======================
    COMPONENTS
@@ -198,24 +222,34 @@ input[type="checkbox"] {
     box-shadow: 0 0 10px #000;
     max-height: 80vh;
     overflow-y: auto;
+    opacity: 0;
+    transform: scale(0.95);
+    animation: popIn 0.3s ease-out forwards;
 }
 
-    .modal-content h2 {
-        font-size: 13px;
-        margin-top: 0;
-        margin-bottom: 10px;
+@keyframes popIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
     }
+}
 
-    .modal-content p {
-        margin: 6px 0;
-        line-height: 1.4;
-    }
+.modal-content h2 {
+    font-size: 13px;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
 
-    .modal-content a {
-        color: #5bf;
-        text-decoration: underline;
-        word-break: break-word;
-    }
+.modal-content p {
+    margin: 6px 0;
+    line-height: 1.4;
+}
+
+.modal-content a {
+    color: #5bf;
+    text-decoration: underline;
+    word-break: break-word;
+}
 
 .modal-close {
     position: absolute;

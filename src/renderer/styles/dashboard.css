@@ -4,15 +4,34 @@
     color: #f4f4f4;
     image-rendering: pixelated;
     padding: 1rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Item card styling */
+/* Item card styling with animation */
 .item {
     background: #222;
     border: 2px solid #444;
     padding: 10px;
     margin: 10px;
     border-radius: 8px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInUp 0.4s ease-out forwards;
+}
+
+    /* Disable animation if .no-anim is applied */
+    .item.no-anim {
+        animation: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+
+/* Fade-in animation keyframes */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Static alert text */
@@ -62,11 +81,17 @@
     margin-top: 2rem;
 }
 
-/* Button styling */
+/* Button styling with hover transition */
 button[title] {
     cursor: pointer;
     margin: 0.5rem 0.5rem 0.5rem 0;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
+
+    button[title]:hover {
+        background-color: #333;
+        transform: scale(1.05);
+    }
 
 /* Responsive layout tweaks */
 @media (max-width: 600px) {
@@ -100,7 +125,7 @@ button[title] {
     z-index: 9999;
 }
 
-/* Modal content box */
+/* Modal content box with pop-in */
 .modal-content {
     background: #1a1a1a;
     color: #fff;
@@ -110,16 +135,26 @@ button[title] {
     width: 90%;
     text-align: center;
     position: relative;
+    opacity: 0;
+    transform: scale(0.95);
+    animation: popIn 0.3s ease-out forwards;
 }
 
-    /* Modal image */
-    .modal-content img {
-        width: 120px;
-        height: 120px;
-        object-fit: contain;
-        margin-bottom: 10px;
-        border: 1px solid #555;
+@keyframes popIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
     }
+}
+
+/* Modal image */
+.modal-content img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    margin-bottom: 10px;
+    border: 1px solid #555;
+}
 
 /* Modal close button */
 .modal-close {
